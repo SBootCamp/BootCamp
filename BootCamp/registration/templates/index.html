@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+<h2>Welcome to your profile: {{ user.get_username }}</h2>
+<ul class="sidebar-nav">
+    <li><strong>Your name:</strong> {{ user.name_mt }}</li>
+    <li><strong>Email:</strong> {{ user.email_mt }}</li>
+</ul>
+<ul class="sidebar-nav">
+    <li><strong>Your name:</strong> {{ student.name_st }}</li>
+    <li><strong>Email:</strong> {{ student.email_st }}</li>
+    <li><strong>GitHub:</strong> {{ student.git }}</li>
+    <li><strong>Phone:</strong> {{ student.number_phone }}</li>
+</ul>
+
+
+
+
+{% endblock %}
