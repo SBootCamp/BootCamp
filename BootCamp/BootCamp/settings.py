@@ -23,7 +23,7 @@ load_dotenv()
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = 'v7$peo*em_xdnryrc+@07n*dh=n^zc4kl8%kn(ut2c9$u7282d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,7 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'registration.apps.RegistrationConfig'
+
+    'rest_framework',
+
+    'registration.apps.RegistrationConfig',
+
 ]
 
 MIDDLEWARE = [
@@ -82,7 +86,7 @@ DATABASES = {
         'USER': os.getenv("USER_DB"),
         'PASSWORD': os.getenv("PASSWORD"),
         'HOST': os.getenv("HOST"),
-        'PORT': '',
+        'PORT': os.getenv("PORT"),
     }
 }
         # Password validation

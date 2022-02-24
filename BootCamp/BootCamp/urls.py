@@ -16,10 +16,24 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from rest_framework import routers
+
+# from .registration import views
+# from .views import StudentScheduleSViewSet
+from registration import views
+from registration.views import StudentScheduleSViewSet, StudentsViewSet, ScheduleSViewSet
+
+router = routers.DefaultRouter()
+router.register('model', StudentScheduleSViewSet, basename='model')
+router.register('add_day', ScheduleSViewSet, basename='add_day')
+# router.register('add_name', StudentsViewSet, basename='add_name')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('registration/', include('registration.urls')),
     path('', RedirectView.as_view(url='/registration/', permanent=True)),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('table/', views.table_students, name='table'),
+    path('api/', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
