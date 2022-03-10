@@ -18,12 +18,3 @@ class ProfileSerializerView(serializers.Serializer):
     github = serializers.CharField(max_length=50)
     number_phone = serializers.CharField(max_length=11, validators=[validators_number_phone])
     password = serializers.CharField(max_length=50)
-
-    # def create(self, validated_data):
-    #     user_data = validated_data.pop('user', None)
-    #     if user_data:
-    #         user = User.objects.get_or_create(**user_data)[0]
-    #         validated_data['user'] = user
-    #         user.set_password(validated_data['password'])
-    #         user.save()
-    #     return Profile.objects.create(**validated_data)

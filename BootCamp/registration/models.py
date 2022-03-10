@@ -1,5 +1,4 @@
-import uuid
-
+from django.contrib.auth.models import User
 from django.db import models
 from django.forms import forms
 
@@ -9,29 +8,31 @@ def validators_number_phone(value):
         raise forms.ValidationError("Номер телефона должен состоять только из цифр")
 
 
-class Mentor(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                          help_text="Unique ID for this mentor")
-    name = models.CharField(max_length=100, help_text="Enter your name")
-    email = models.EmailField(max_length=50)
+class Flow(models.Model):
+    number = models.IntegerField()
+    start = models.DateField(blank=True, default=None)
+    end = models.DateField(blank=True, default=None)
 
     def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering = ['name', 'email']
+        return str(self.number)
 
 
-class Student(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                          help_text="Unique ID for this student")
-    name = models.CharField(max_length=100, help_text="Enter your name")
-    email = models.EmailField(max_length=50)
+class Profile(models.Model):
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
     github = models.CharField(max_length=50, help_text="Enter your github")
     number_phone = models.CharField(max_length=11, blank=True, validators=[validators_number_phone])
+    password = models.CharField(max_length=50, default=None)
+    count_tasks = models.IntegerField(default=0)
+    flow = models.ForeignKey(Flow, null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.__getattribute__('username')
+
+
+class Achievement(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=100)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
-
-    class Meta:
-        permissions = (("take_information", "take information"),)
