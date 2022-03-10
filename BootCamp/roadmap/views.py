@@ -1,33 +1,34 @@
-from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render
-from django.views import generic
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import generics, status
-from .models import *
+
 from .serializers import *
 
 
-@login_required
 def index(request):
+    user = User.objects.filter(username=request.user.username)[0]
+    query = Event.objects.filter(user_id=user)
+    newlist = [i.node_id.name for i in query]
+
     return render(
         request,
         'tree.html',
-        context={'nodes': Node.objects.all()},
+        context={'nodes': Node.objects.all(), 'list': newlist},
     )
 
 
-# class ViewNode(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Node.objects.all()
-#     serializer_class = NodeSerializer
-#
-#
-# class ListNodes(generics.ListCreateAPIView):
-#     queryset = Node.objects.all()
-#     serializer_class = NodeSerializer
+def indexUsers(request, pk):
+    user = User.objects.filter(pk=pk)[0]
+    query = Event.objects.filter(user_id=user)
+    newlist = [i.node_id.name for i in query]
+
+    return render(
+        request,
+        'tree.html',
+        context={'nodes': Node.objects.all(), 'list': newlist},
+    )
 
 
 class ViewEvent(APIView):
@@ -69,6 +70,7 @@ class DetailEvent(APIView):
             return Response({'error': 'error'})
 
     def put(self, request, pk):
+        print(request.user)
         if request.user.is_authenticated:
             user = User.objects.filter(username=request.user.username)[0]
             query = get_object_or_404(Event.objects.all(), pk=pk)
@@ -77,6 +79,8 @@ class DetailEvent(APIView):
             if serializer.is_valid(raise_exception=True):
                 query = serializer.save()
             return Response(serializer.data)
+        else:
+            return Response({'error': 'Авторизуйтесь для этого действия'})
 
     def delete(self, request, pk):
         event = get_object_or_404(Event.objects.all(), pk=pk)
