@@ -36,3 +36,12 @@ class Achievement(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Series(models.Model):
+    user = models.OneToOneField(User, related_name='series', on_delete=models.CASCADE)
+    date_time = models.DateTimeField(blank=True, default=None)
+
+    def __str__(self):
+        return self.user.__getattribute__('username')
+
