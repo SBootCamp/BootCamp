@@ -77,7 +77,21 @@
       margin-left: 20%;
       margin-right: 20%;
       padding: 10px;
-      background-color: green;
+      background-color: #51F096;
+
+    }.ready {
+      border: 1px solid #333;
+      margin-left: 20%;
+      margin-right: 20%;
+      padding: 10px;
+      background-color: #F8FF78;
+
+    }.start {
+      border: 1px solid #333;
+      margin-left: 20%;
+      margin-right: 20%;
+      padding: 10px;
+      background-color: #C9C9C9;
     }
     </style>
 </head>
@@ -85,10 +99,18 @@
 <ul class="root">
     {% recursetree nodes %}
         <li class="treeCSS">
-            {% if node.name in list %}
+            {% if node.name in good %}
                 <div class="good">{{ node.name }}</div>
             {% else %}
-                <div class="nodee">{{ node.name }}</div>
+                {% if node.name in ready %}
+                    <div class="ready">{{ node.name }}</div>
+                {% else %}
+                    {% if node.name in start %}
+                    <div class="start">{{ node.name }}</div>
+                {% else %}
+                    <div class="nodee">{{ node.name }}</div>
+                {% endif %}
+                {% endif %}
             {% endif %}
 
             {% if not node.is_leaf_node %}

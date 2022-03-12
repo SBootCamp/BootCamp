@@ -24,7 +24,7 @@ class Event(models.Model):
     node_id = models.ForeignKey(Node, on_delete=models.CASCADE)
     status = models.CharField(max_length=300, choices=(('0', 'В процессе'), ('1', 'Готово к сдаче'), ('2', 'Сдано')))
     startdate = models.DateTimeField(auto_now=True)
-    enddate = models.DateTimeField(blank=True, null=True)
+    enddate = models.DateTimeField(blank=True, default=None, null=True)
 
     def __str__(self):
         return str(self.pk)

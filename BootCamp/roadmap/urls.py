@@ -1,13 +1,13 @@
 from django.urls import path
 
 from . import views
-from .views import *
+from .views import ViewEvent, DetailEvent, ListAcceptEvents, DetailAcceptEvents, indexUsers, index
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('<int:pk>', views.indexUsers, name='indexUser'),
-    path('api/v1/test/myevents', ViewEvent.as_view()),
-    path('api/v1/test/myevents/<int:pk>', DetailEvent.as_view()),
-    path('api/v1/test/acceptevents', ListAcceptEvents.as_view()),
-    path('api/v1/test/acceptevents/<int:pk>', DetailAcceptEvents.as_view()),
+    path('', index.as_view()),
+    path('<int:pk>', indexUsers.as_view()),
+    path('myevents', ViewEvent.as_view()),
+    path('myevents/<int:pk>', DetailEvent.as_view()),
+    path('acceptevents', ListAcceptEvents.as_view()),
+    path('acceptevents/<int:pk>', DetailAcceptEvents.as_view()),
 ]
