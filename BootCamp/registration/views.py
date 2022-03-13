@@ -3,6 +3,8 @@ from django.core.mail import send_mail
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate, login, logout
 
 from .models import Profile
 from .serializers import ProfileSerializerView
@@ -10,6 +12,7 @@ from .serializers import ProfileSerializerView
 
 class RegistrationUserView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # permission_classes = [IsAuthenticated]
     serializer_class = ProfileSerializerView
 
     def get(self, request):
@@ -55,4 +58,22 @@ class Check(APIView):
         user.save()
         profile = Profile(user=user, github=github, number_phone=number_phone, password=password)
         profile.save()
-        return Response({"success": "Your account created "})
+        return Response({"success": "Account created "})
+
+
+class Login(APIView):
+    def get(self, request):
+        user = authenticate(username=request.GET.get('username', ''), password=request.GET.get('password', ''))
+        token = Token.objects.get(user=user)
+        print(token)
+        if user is not None:
+            login(request, user)
+            return Response(status=200, data={"token": str(token)})
+        else:
+            return Response(status=403, data={"message": "Неправильный ввод данных"})
+
+
+class Logout(APIView):
+    def get(self, request):
+        logout(request)
+        return Response(status=200, data={"message": "Успешный выход из системы"})
