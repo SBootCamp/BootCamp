@@ -45,14 +45,13 @@ class ScheduleS(models.Model):
     here = models.BooleanField(null=True, blank=True)
     sick = models.BooleanField(null=True, blank=True)
 
-    # def __str__(self):
-    #     return self.day_of_week
+    def __str__(self):
+        return self.day_of_week
 
 class StudentScheduleS(models.Model):
-    names = models.ForeignKey(Student, on_delete=models.CASCADE,  null=True)
-    days = models.ForeignKey(ScheduleS, on_delete=models.CASCADE, null=True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE,  null=True)
+    schedule = models.ForeignKey(ScheduleS, on_delete=models.CASCADE, null=True)
     notes = models.CharField(max_length=255, null=True, blank=True)
 
-
     def __str__(self):
-        return self.days
+        return self.schedule

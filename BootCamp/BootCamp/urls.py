@@ -21,13 +21,7 @@ from rest_framework import routers
 # from .registration import views
 # from .views import StudentScheduleSViewSet
 from registration import views
-from registration.views import StudentScheduleSViewSet, StudentsViewSet, ScheduleSViewSet
 
-router = routers.DefaultRouter()
-router.register('model', StudentScheduleSViewSet, basename='model')
-router.register('add_day', ScheduleSViewSet, basename='add_day')
-router.register('add_name', StudentsViewSet, basename='add_name')
-# router.register('new_schedule', views.ScheduleAPIView.as_view(), basename='new_schedule')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,8 +29,10 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/registration/', permanent=True)),
     path('accounts/', include('django.contrib.auth.urls')),
     path('table/', views.table_students, name='table'),
-    path('api/', include(router.urls)),
+    # path('api/', include(router.urls)),
+    path('api/', include('registration.urls')),
     path('api/new_schedule', views.ScheduleAPIView.as_view(), name='new_schedule'),
     path('api/new_schedule/<int:schedule_s_id>', views.OneStudentSchedule.as_view(), name='one_schedule'),
+    path('api/new_schedule1/<uuid:id>', views.OneStudentSchedule.as_view(), name='one_schedule'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

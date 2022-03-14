@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 import generics as generics
 from django.contrib.auth.decorators import login_required
@@ -11,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 from .serializers import ScheduleSSerializer, StudentsSerializer, StudentScheduleSSerializer, ForPutSerializer, \
-    ForPostSerializer
+    ForPostSerializer, MentorSerializer
 from .models import Student, ScheduleS, StudentScheduleS
 from django.views import generic
 
@@ -36,31 +37,32 @@ def index(request):
     )
 
 def table_students(request):
-    some = Student.objects.all()
-    some2 = ScheduleS.objects.all()
-    some3 = StudentScheduleS.objects.all()
+    student_ = Student.objects.all()
+    schedule_ = ScheduleS.objects.all()
+    student_schedule_ = StudentScheduleS.objects.all()
     res = '<h1>Расписание студентов</h1>'
 
     import datetime
 
     d1 = datetime.datetime.today()
     d1 = d1 + datetime.timedelta(days=1)
+    days_with_st = [i.day_of_week for i in schedule_]
+    good_form = [el.strftime("%Y %A %d %B ") for el in days_with_st]
 
     for i in range(30):
-        d2 = d1 + datetime.timedelta(days=i)
-        res += f'<div> {d2.strftime("%Y %A %d %B ")}{[item.name for item in some]}</div>'
+        for elem in good_form:
+            d2 = d1 + datetime.timedelta(days=i)
+            if elem == d2.strftime("%Y %A %d %B "):
+                res += f'<div> {d2.strftime("%Y %A %d %B ")}{[item.name for item in student_ ]}</div>'
+            else:
+                pass
+
     return HttpResponse(res)
+
 
 class StudentsViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentsSerializer
-
-    def put(self, id):
-        change = Student.objects.get(id=id)
-        serializer = StudentsSerializer(change, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-        return Response(serializer.data)
 
     def delete(self, id):
         change = Student.objects.get(id=id)
@@ -73,9 +75,10 @@ class StudentsViewSet(viewsets.ModelViewSet):
 class ScheduleAPIView(APIView):
 
     def get(self, request):
-        bb = Student.objects.all()
-        res = StudentsSerializer(bb, many=True)
+        queryset = Student.objects.all()
+        res = StudentsSerializer(queryset, many=True)
         return Response(data=res.data)
+
 
 class OneStudentSchedule(APIView):
 
@@ -94,8 +97,9 @@ class OneStudentSchedule(APIView):
             answer = StudentsSerializer(self.get_queryset(), many=True)
 
         return Response(answer.data)
+
     @staticmethod
-    def post(request: Request, id=None) -> Response:
+    def post(request, id=None):
         try:
             answer = Student.objects.get(id=id)
         except Student.DoesNotExist:
@@ -103,10 +107,13 @@ class OneStudentSchedule(APIView):
         ser = ForPostSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
         data = ser.validated_data
-        b = ScheduleS.objects.get_or_create(day_of_week=data.get('day_of_week'))
+        b = ScheduleS.objects.create(day_of_week=data.get('day_of_week'), pk=data.get('id'))
         c = answer.schedule.add(b)
-        c.save()
-        return Response(c.data)
+        try:
+            c.save()
+        except AttributeError:
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(c.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
     def put(request: Request, schedule_s_id: int) -> Response:
@@ -122,10 +129,14 @@ class OneStudentSchedule(APIView):
         user_schedule.day_of_week = data.get('day_of_week') or user_schedule.day_of_week
         return Response(ScheduleSSerializer(user_schedule).data)
 
-    def delete(self, request, id=None):
-        answer = self.get_object(id or request.query_params.get('id'))
-        answer.delete()
-        return Response(status=status.HTTP_200_OK)
+    @staticmethod
+    def delete(request: Request, schedule_s_id: int) -> Response:
+        try:
+            schedule_for_del = ScheduleS.objects.get(pk=schedule_s_id)
+            schedule_for_del.delete()
+        except ScheduleS.DoesNotExist:
+            return Response(status=400, data={'error': 'schedule not found'})
+        return Response(status=status.HTTP_200_OK, data={'deleted': 'schedule was deleted'})
 
 class ScheduleSViewSet(viewsets.ModelViewSet):
     queryset = ScheduleS.objects.all()
@@ -136,10 +147,3 @@ class StudentScheduleSViewSet(viewsets.ModelViewSet):
     queryset = StudentScheduleS.objects.all()
     serializer_class = StudentScheduleSSerializer
 
-
-
-# class TestOne(APIView):
-#     @staticmethod
-#     def get(request):
-#         test = StudentScheduleS.objects.all()
-#         return Response(status=200, data={'test': 90})
