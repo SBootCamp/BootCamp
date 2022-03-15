@@ -17,7 +17,7 @@ def handle_new_job(sender, **kwargs):
         user.groups.add(g)
 
 
-# @receiver(post_save, sender=Event)
+@receiver(post_save, sender=Event)
 def handle_new_event(sender, **kwargs):
     if not kwargs.get('created', False):
         return None
@@ -25,7 +25,7 @@ def handle_new_event(sender, **kwargs):
     user = event.user_id
     node = event.node_id
     profile = Profile.objects.filter(user=user)
-    if event.status == StatusEnum.SUCCESS:
+    if event.status == EventStatus.success:
         profile.count_tasks += 1
         profile.save()
         if Profile.objects.all().filter(count_tasks=1).count() == 1:
