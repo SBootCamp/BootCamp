@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-
+from .choices import EventStatus
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,9 +14,9 @@ class index(APIView):
             user = User.objects.get(pk=request.user.pk)
         except User.DoesNotExists:
             return Response({"error": "Пользователь не найден"}, status=409)
-        good_list = list(Event.objects.filter(user_id=user, status=2).values_list("node_id__name", flat=True))
-        ready_list = list(Event.objects.filter(user_id=user, status=1).values_list("node_id__name", flat=True))
-        start_list = list(Event.objects.filter(user_id=user, status=0).values_list("node_id__name", flat=True))
+        good_list = list(Event.objects.filter(user_id=user, status=EventStatus.success).values_list("node_id__name", flat=True))
+        ready_list = list(Event.objects.filter(user_id=user, status=EventStatus.ready).values_list("node_id__name", flat=True))
+        start_list = list(Event.objects.filter(user_id=user, status=EventStatus.start).values_list("node_id__name", flat=True))
         return render(
             request,
             'tree.html',
@@ -30,9 +30,9 @@ class indexUsers(APIView):
             user = User.objects.get(pk=pk)
         except User.DoesNotExists:
             return Response({"error": "Пользователь не найден"}, status=409)
-        good_list = list(Event.objects.filter(user_id=user, status=2).values_list("node_id__name", flat=True))
-        ready_list = list(Event.objects.filter(user_id=user, status=1).values_list("node_id__name", flat=True))
-        start_list = list(Event.objects.filter(user_id=user, status=0).values_list("node_id__name", flat=True))
+        good_list = list(Event.objects.filter(user_id=user, status=EventStatus.success).values_list("node_id__name", flat=True))
+        ready_list = list(Event.objects.filter(user_id=user, status=EventStatus.ready).values_list("node_id__name", flat=True))
+        start_list = list(Event.objects.filter(user_id=user, status=EventStatus.start).values_list("node_id__name", flat=True))
         return render(
             request,
             'tree.html',
@@ -102,7 +102,7 @@ class ListAcceptEvents(APIView):
     serializer_class = EventSerializer
 
     def get(self, request):
-        query = Event.objects.filter(status=1)
+        query = Event.objects.filter(status=EventStatus.ready)
         serializer = EventListSerializer(query, many=True)
         return Response(serializer.data)
 
