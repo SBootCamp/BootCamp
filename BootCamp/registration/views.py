@@ -214,7 +214,3 @@ class ScheduleSViewSet(viewsets.ModelViewSet):
     serializer_class = ScheduleSSerializer
 
 
-# class StudentScheduleSViewSet(viewsets.ModelViewSet):
-#     queryset = StudentScheduleS.objects.all()
-#     serializer_class = StudentScheduleSSerializer
-
