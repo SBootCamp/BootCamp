@@ -1,16 +1,11 @@
-from django.urls import path, include
-from rest_framework import routers
+from django.urls import include, path
 
-# from BootCamp.urls import router
 from . import views
-from .views import  ScheduleSViewSet, StudentsViewSet
-
-router = routers.DefaultRouter()
-# router.register('model', StudentScheduleSViewSet, basename='model')
-router.register('add_day', ScheduleSViewSet, basename='add_day')
-router.register('get_students', StudentsViewSet, basename='add_name')
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('api/', include(router.urls)),
+    path('', views.RegistrationUserView.as_view(), name='registration'),
+    path('check/', views.Check.as_view(), name='check'),
+    path('login/', views.Login.as_view(), name='login'),
+    path('logout/', views.Logout.as_view(), name='logout'),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
