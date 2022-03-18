@@ -45,10 +45,10 @@ from rest_framework.request import Request
 
 from .serializers import ScheduleSSerializer, StudentsSerializer, ForPutSerializer, \
     ForPostSerializer, MentorSerializer
-from .models import Student, ScheduleS
+from .models import ScheduleS
 from django.views import generic
 
-from .models import Student, Mentor, ScheduleS
+from .models import ScheduleS
 
 def registration_view(request, validated_data):
     user_data = dict(validated_data)
@@ -106,7 +106,7 @@ class Logout(APIView):
         return Response(status=200, data={"message": "Успешный выход из системы"})
 
 def table_students(request):
-    student_ = Student.objects.all()
+    student_ = Profile.objects.all()
     schedule_ = ScheduleS.objects.all()
     # student_schedule_ = StudentScheduleS.objects.all()
     res = '<h1>Расписание студентов</h1>'
@@ -130,11 +130,11 @@ def table_students(request):
 
 
 class StudentsViewSet(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
+    queryset = Profile.objects.all()
     serializer_class = StudentsSerializer
 
     def delete(self, id):
-        change = Student.objects.get(id=id)
+        change = Profile.objects.get(id=id)
         change.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
         # serializer = StudentsSerializer(change, data=request.data)
@@ -146,7 +146,7 @@ class StudentsViewSet(viewsets.ModelViewSet):
 class ScheduleAPIView(APIView):
 
     def get(self, request):
-        queryset = Student.objects.all()
+        queryset = Profile.objects.all()
         res = StudentsSerializer(queryset, many=True)
         return Response(data=res.data)
 
@@ -154,7 +154,7 @@ class ScheduleAPIView(APIView):
 class OneStudentSchedule(APIView):
 
     def get_queryset(self, *args, **kwargs):
-        res = Student.objects.all()
+        res = Profile.objects.all()
         return res
 
     def get_object(self, id):
@@ -172,9 +172,9 @@ class OneStudentSchedule(APIView):
     @staticmethod
     def post(request, id=None):
         try:
-            answer = get_object_or_404(Student, id=id)
-        except Student.DoesNotExist:
-            return Response(answer.data)
+            answer = Profile.objects.get(id=id)
+        except Profile.DoesNotExist:
+            return Response(status=400, data={'error': 'student not found'})
         ser = ForPostSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
         data = ser.validated_data

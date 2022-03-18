@@ -24,6 +24,7 @@ class Profile(models.Model):
     password = models.CharField(max_length=50, default=None)
     count_tasks = models.IntegerField(default=0)
     flow = models.ForeignKey(Flow, null=True, on_delete=models.CASCADE)
+    schedule = models.ManyToManyField('ScheduleS')
 
     def __str__(self):
         return self.user.__getattribute__('username')
@@ -33,7 +34,6 @@ class Achievement(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=100)
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    schedule = models.ManyToManyField('ScheduleS')
 
     def __str__(self):
         return self.name
@@ -47,7 +47,6 @@ class Series(models.Model):
         return self.user.__getattribute__('username')
 
 
-
 class ScheduleS(models.Model):
     day_of_week = models.DateField()
     time_in = models.TimeField(null=True, blank=True)
@@ -57,11 +56,3 @@ class ScheduleS(models.Model):
 
     def __str__(self):
         return self.day_of_week
-
-# class StudentScheduleS(models.Model):
-#     student = models.ForeignKey(Student, on_delete=models.CASCADE,  null=True)
-#     schedule = models.ForeignKey(ScheduleS, on_delete=models.CASCADE, null=True)
-#     notes = models.CharField(max_length=255, null=True, blank=True)
-#
-#     def __str__(self):
-#         return self.schedule
