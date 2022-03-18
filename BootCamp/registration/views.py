@@ -11,9 +11,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
 
-from .serializers import ScheduleSSerializer, StudentsSerializer, StudentScheduleSSerializer, ForPutSerializer, \
+from .serializers import ScheduleSSerializer, StudentsSerializer, ForPutSerializer, \
     ForPostSerializer, MentorSerializer
-from .models import Student, ScheduleS, StudentScheduleS
+from .models import Student, ScheduleS
 from django.views import generic
 
 from .models import Student, Mentor, ScheduleS
@@ -39,7 +39,7 @@ def index(request):
 def table_students(request):
     student_ = Student.objects.all()
     schedule_ = ScheduleS.objects.all()
-    student_schedule_ = StudentScheduleS.objects.all()
+    # student_schedule_ = StudentScheduleS.objects.all()
     res = '<h1>Расписание студентов</h1>'
 
     import datetime
@@ -66,10 +66,12 @@ class StudentsViewSet(viewsets.ModelViewSet):
 
     def delete(self, id):
         change = Student.objects.get(id=id)
-        serializer = StudentsSerializer(change, data=request.data)
-        if serializer.is_valid():
-            change.delete()
-        return Response(status=status.HTTP_200_OK)
+        change.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        # serializer = StudentsSerializer(change, data=request.data)
+        # if serializer.is_valid():
+        #     change.delete()
+        # return Response(status=status.HTTP_200_OK)
 
 
 class ScheduleAPIView(APIView):
@@ -101,19 +103,19 @@ class OneStudentSchedule(APIView):
     @staticmethod
     def post(request, id=None):
         try:
-            answer = Student.objects.get(id=id)
+            answer = get_object_or_404(Student, id=id)
         except Student.DoesNotExist:
-            return Response(status=400, data={'error': 'STUDENT not found'})
+            return Response(answer.data)
         ser = ForPostSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
         data = ser.validated_data
-        b = ScheduleS.objects.create(day_of_week=data.get('day_of_week'), pk=data.get('id'))
-        c = answer.schedule.add(b)
+        for_add = ScheduleS.objects.create(day_of_week=data.get('day_of_week'), pk=data.get('id'))
+        for_save = answer.schedule.add(for_add)
         try:
-            c.save()
+            for_save.save()
         except AttributeError:
             return Response(status=status.HTTP_201_CREATED)
-        return Response(c.data, status=status.HTTP_201_CREATED)
+        return Response(for_save.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
     def put(request: Request, schedule_s_id: int) -> Response:
@@ -132,10 +134,10 @@ class OneStudentSchedule(APIView):
     @staticmethod
     def delete(request: Request, schedule_s_id: int) -> Response:
         try:
-            schedule_for_del = ScheduleS.objects.get(pk=schedule_s_id)
+            schedule_for_del = get_object_or_404(ScheduleS, pk=schedule_s_id)
             schedule_for_del.delete()
         except ScheduleS.DoesNotExist:
-            return Response(status=400, data={'error': 'schedule not found'})
+            return Response(schedule_for_del.data)
         return Response(status=status.HTTP_200_OK, data={'deleted': 'schedule was deleted'})
 
 class ScheduleSViewSet(viewsets.ModelViewSet):
@@ -143,7 +145,7 @@ class ScheduleSViewSet(viewsets.ModelViewSet):
     serializer_class = ScheduleSSerializer
 
 
-class StudentScheduleSViewSet(viewsets.ModelViewSet):
-    queryset = StudentScheduleS.objects.all()
-    serializer_class = StudentScheduleSSerializer
+# class StudentScheduleSViewSet(viewsets.ModelViewSet):
+#     queryset = StudentScheduleS.objects.all()
+#     serializer_class = StudentScheduleSSerializer
 

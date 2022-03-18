@@ -48,10 +48,10 @@ class ScheduleS(models.Model):
     def __str__(self):
         return self.day_of_week
 
-class StudentScheduleS(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE,  null=True)
-    schedule = models.ForeignKey(ScheduleS, on_delete=models.CASCADE, null=True)
-    notes = models.CharField(max_length=255, null=True, blank=True)
-
-    def __str__(self):
-        return self.schedule
+# class StudentScheduleS(models.Model):
+#     student = models.ForeignKey(Student, on_delete=models.CASCADE,  null=True)
+#     schedule = models.ForeignKey(ScheduleS, on_delete=models.CASCADE, null=True)
+#     notes = models.CharField(max_length=255, null=True, blank=True)
+#
+#     def __str__(self):
+#         return self.schedule

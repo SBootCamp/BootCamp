@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import StudentScheduleS, ScheduleS, Student
+from .models import ScheduleS, Student
 
 
 class ScheduleSSerializer(serializers.Serializer):
@@ -32,10 +32,10 @@ class ForPutSerializer(serializers.Serializer):
     time_out = serializers.TimeField(required=False)
 
 
-class StudentScheduleSSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = StudentScheduleS
-        fields = ('notes', 'student', 'schedule',)
+# class StudentScheduleSSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = StudentScheduleS
+#         fields = ('notes', 'student', 'schedule',)
 
 
