@@ -5,7 +5,9 @@ from django.db.models import Max
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from ..models import Achievement, Profile
+from roadmap.choices import EventStatus
+from roadmap.models import Event, Node
+from ..models import Achievement, Profile, Series
 
 
 @receiver(post_save, sender=User)

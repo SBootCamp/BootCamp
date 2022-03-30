@@ -39,10 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'registration.apps.RegistrationConfig',
-    'roadmap',
+
     'mptt',
     'rest_framework',
+
+    'registration.apps.RegistrationConfig',
+    'roadmap',
+
 ]
 
 
@@ -86,7 +89,7 @@ DATABASES = {
         'USER': os.getenv("USER_DB"),
         'PASSWORD': os.getenv("PASSWORD"),
         'HOST': os.getenv("HOST"),
-        'PORT': '',
+        'PORT': os.getenv("PORT"),
     }
 }
         # Password validation
